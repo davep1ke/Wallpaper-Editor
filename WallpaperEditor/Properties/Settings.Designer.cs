@@ -121,5 +121,29 @@ namespace WallpaperEditor.Properties {
                 this["screenResMinX"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("c:\\backup\\discards")]
+        public string throwawayFolder {
+            get {
+                return ((string)(this["throwawayFolder"]));
+            }
+            set {
+                this["throwawayFolder"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Program Files (x86)\\paint.net.dontupdate\\PaintDotNet.exe")]
+        public string externalEditor {
+            get {
+                return ((string)(this["externalEditor"]));
+            }
+            set {
+                this["externalEditor"] = value;
+            }
+        }
     }
 }

@@ -30,5 +30,11 @@
     <Setting Name="screenResMinX" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1920</Value>
     </Setting>
+    <Setting Name="throwawayFolder" Type="System.String" Scope="User">
+      <Value Profile="(Default)">c:\backup\discards</Value>
+    </Setting>
+    <Setting Name="externalEditor" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Program Files (x86)\paint.net.dontupdate\PaintDotNet.exe</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
