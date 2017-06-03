@@ -43,7 +43,6 @@ namespace WallpaperEditor
             InitializeComponent();
             syncLocalSettings();
             grid_EditOpts.Visibility = Visibility.Hidden;
-            Tag_Edit_Help.Visibility = Visibility.Hidden;
 
             //Loop through our desination dirs. 
 
@@ -687,11 +686,15 @@ namespace WallpaperEditor
 
         }
 
+        private void setStatus(string text)
+        {
+            Tag_status.Text = text;
+        }
+
         private void btn_Crop_Click(object sender, RoutedEventArgs e)
         {
             //show the help
-            Tag_Edit_Help.Text = "Crop using buttons below";
-            Tag_Edit_Help.Visibility = Visibility.Visible;
+            setStatus("Crop using buttons");
             grid_EditOpts.Visibility = Visibility.Visible;
 
             grid_EditOpts.Focus();
@@ -835,7 +838,7 @@ namespace WallpaperEditor
             refreshImage();
 
             grid_EditOpts.Visibility = Visibility.Hidden;
-            Tag_Edit_Help.Visibility = Visibility.Hidden;
+            setStatus("");
 
         }
 
