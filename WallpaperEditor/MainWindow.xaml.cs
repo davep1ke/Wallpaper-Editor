@@ -654,7 +654,7 @@ namespace WallpaperEditor
 
 
 
-       
+
 
         /*// <summary>
         /// runs the scan in the background, then pops open the window when it finds a file without an image. 
@@ -707,16 +707,31 @@ namespace WallpaperEditor
         }
         */
 
+        enum outputFormat { jpeg, bmp };
+
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="outputPath">Diretory and filename to export to. Leave blank for temp location </param>
-        private void saveImage(string outputPath = null)
+        private void saveImage(string outputPath = null, outputFormat format = outputFormat.jpeg)
         {
-
-            JpegBitmapEncoder encoder = new JpegBitmapEncoder();
-            encoder.QualityLevel = 100;
+            BitmapEncoder encoder;
+            switch (format)
+            { 
+                case outputFormat.jpeg:
+                    JpegBitmapEncoder jEnc = new JpegBitmapEncoder();
+                    jEnc.QualityLevel = 100;
+                    encoder = jEnc;
+                    break;
+                case outputFormat.bmp:
+                    encoder = new BmpBitmapEncoder();
+                    break;
+                default:
+                    encoder = new JpegBitmapEncoder();
+                    break;
+            }
+            
             encoder.Frames.Add(BitmapFrame.Create(imageBitmap));
 
             if (outputPath == null) { outputPath = Properties.Settings.Default.testImageLocation; }
@@ -884,7 +899,7 @@ namespace WallpaperEditor
         private void btn_External_Edit(object sender, RoutedEventArgs e)
         {
             //write file to temp
-            saveImage();
+            saveImage(null, outputFormat.bmp);
 
             //open editor
             ProcessStartInfo StartInfo = new ProcessStartInfo(Properties.Settings.Default.externalEditor);
