@@ -4,7 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         Title="Wallpaper Editor" Height="816.5" Width="1200" AllowDrop="True" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Closing="Window_Closing">
-    <Grid AllowDrop="True">
+    <Grid x:Name="mainWindowGrid" AllowDrop="True">
+        <!--Grid.InputBindings >
+            <KeyBinding Key="X" Command="{Binding btn_External_Edit}"></KeyBinding>
+            <KeyBinding Key="E" Command="{Binding btn_Expand_Click}"></KeyBinding>
+            <KeyBinding Key="C" Command="{Binding btn_Crop_Click}"></KeyBinding>
+        </!-->
         <TreeView Height="241" HorizontalAlignment="Left" Margin="12,12,0,0" Name="FolderBrowser" VerticalAlignment="Top" Width="266" ItemsSource="{Binding}">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem">
@@ -17,44 +22,21 @@
         <Button Content="Exit" Height="23" HorizontalAlignment="Right" Margin="0,0,10,30" Name="btn_Exit" VerticalAlignment="Bottom" Width="124" Click="btn_Exit_Click" IsDefault="True" />
         <Image HorizontalAlignment="Stretch" Margin="294,32,146,30" x:Name="Image_Preview" Stretch="Uniform" VerticalAlignment="Stretch" AllowDrop="True" />
         <TextBox Height="24" HorizontalAlignment="Right" Margin="0,36,10,0" Name="Tag_ImageDims" VerticalAlignment="Top" Width="124" Background="#00000000" BorderBrush="#00000000" Foreground="Blue" TextAlignment="Center" />
-        <Button Content="_Crop" Height="22" HorizontalAlignment="Right" Margin="0,124,10,0" x:Name="btn_Crop" VerticalAlignment="Top" Width="124" Click="btn_Crop_Click" />
-        <Button Content="_Discard" Height="22" HorizontalAlignment="Right" Margin="0,236,10,0" x:Name="btn_SaveNextEmpty" VerticalAlignment="Top" Width="124" Click="btn_Discard_Click" />
+        <Button Content="_Crop" Height="22" HorizontalAlignment="Right" Margin="0,160,10,0" x:Name="btn_Crop" VerticalAlignment="Top" Width="124" Click="btn_Crop_Click" />
+        <Button Content="_Discard" Height="22" HorizontalAlignment="Right" Margin="0,272,10,0" x:Name="btn_SaveNextEmpty" VerticalAlignment="Top" Width="124" Click="btn_Discard_Click" />
         <Button Content="_Test" Height="24" HorizontalAlignment="Right" Margin="0,8,10,0" x:Name="btn_Test" VerticalAlignment="Top" Width="124" Click="btn_Test_Click" />
-        <Button Content="_Edit Externally" Height="22" HorizontalAlignment="Right" Margin="0,180,10,0" x:Name="btn_External" VerticalAlignment="Top" Width="124" Click="btn_External_Edit" />
-        <TextBox Height="22" HorizontalAlignment="Right" Margin="0,208,10,0" x:Name="Tag_ImageDims_OK" VerticalAlignment="Top" Width="124" Background="#00000000" BorderBrush="#00000000" Foreground="Blue" TextAlignment="Center" />
-        <UniformGrid x:Name="grid_destinations" HorizontalAlignment="Right" Margin="0,264,10,216" Width="124" Rows="5" Columns="1" MinHeight="274" MaxHeight="274" />
-        <TextBox Height="22" HorizontalAlignment="Right" Margin="0,152,10,0" x:Name="Tag_CropTarget" VerticalAlignment="Top" Width="124" Background="#00000000" BorderBrush="#00000000" Foreground="Blue" TextAlignment="Center" />
-        <Button Content="E_xpand" Height="24" HorizontalAlignment="Right" Margin="0,64,10,0" x:Name="btn_Expand" VerticalAlignment="Top" Width="124" Click="btn_Crop_Click" />
-        <TextBox Height="24" HorizontalAlignment="Right" Margin="0,92,10,0" x:Name="Tag_ExpandTarget" VerticalAlignment="Top" Width="124" Background="#00000000" BorderBrush="#00000000" Foreground="Blue" TextAlignment="Center" />
-        <Grid x:Name="grid_EditOpts" HorizontalAlignment="Right" Margin="0,0,9,86" Width="124" Height="117" VerticalAlignment="Bottom">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <Label x:Name="Xlabel" Content="X" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center"/>
-            <Label x:Name="Ylabel" Content="Y" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center"/>
-            <Button Grid.Column="1" Grid.Row="1" x:Name="edit_Q" Click="btn_Edit_Click" Content="_Q"/>
-            <Button Grid.Column="2" Grid.Row="1" x:Name="edit_W" Click="btn_Edit_Click">W</Button>
-            <Button Grid.Column="3" Grid.Row="1" x:Name="edit_E" Click="btn_Edit_Click" Content="_E"/>
-            <Button Grid.Column="1" Grid.Row="2" x:Name="edit_A" Click="btn_Edit_Click">A</Button>
-            <Button Grid.Column="2" Grid.Row="2" x:Name="edit_S" Click="btn_Edit_Click" Content="_S"/>
-            <Button Grid.Column="3" Grid.Row="2" x:Name="edit_D" Click="btn_Edit_Click">D</Button>
-            <Button Grid.Column="1" Grid.Row="4" x:Name="edit_Z" Click="btn_Edit_Click">Z</Button>
-            <Button Grid.Column="2" Grid.Row="4" x:Name="edit_X" Click="btn_Edit_Click">X</Button>
-            <Button Grid.Column="3" Grid.Row="4" x:Name="edit_C" Click="btn_Edit_Click">C</Button>
+        <Button Content="Edit E_xternally" Height="22" HorizontalAlignment="Right" Margin="0,216,10,0" x:Name="btn_External" VerticalAlignment="Top" Width="124" Click="btn_External_Edit" />
+        <TextBox Height="22" HorizontalAlignment="Right" Margin="0,244,10,0" x:Name="Tag_ImageDims_OK" VerticalAlignment="Top" Width="124" Background="#00000000" BorderBrush="#00000000" Foreground="Blue" TextAlignment="Center" />
+        <UniformGrid x:Name="grid_destinations" HorizontalAlignment="Right" Margin="0,299,10,86" Width="124" Rows="5" Columns="1" MinHeight="274" MaxHeight="274" />
+        <TextBox Height="22" HorizontalAlignment="Right" Margin="0,188,10,0" x:Name="Tag_CropTarget" VerticalAlignment="Top" Width="124" Background="#00000000" BorderBrush="#00000000" Foreground="Blue" TextAlignment="Center" />
+        <Button Content="_Stretch&lt;&gt;" Height="24" HorizontalAlignment="Right" Margin="0,64,10,0" x:Name="btn_Stretch_x2" VerticalAlignment="Top" Width="61" Click="btn_Stretch_Click" />
+        <TextBox Height="24" HorizontalAlignment="Right" Margin="0,128,10,0" x:Name="Tag_ExpandTarget" VerticalAlignment="Top" Width="124" Background="#00000000" BorderBrush="#00000000" Foreground="Blue" TextAlignment="Center" />
 
-        </Grid>
         <Button Content="Options" Height="23" HorizontalAlignment="Right" Margin="0,0,10,58" x:Name="btn_Options" VerticalAlignment="Bottom" Width="124" Click="btn_Options_Click" IsDefault="True" />
         <StatusBar x:Name="sta_Mainwindow" Height="24" Margin="0,0,0,1" VerticalAlignment="Bottom">
             <TextBox Height="22" HorizontalAlignment="Right" x:Name="Tag_status" VerticalAlignment="Top" Width="1182" Background="#00000000" BorderBrush="#00000000" Foreground="Blue" TextAlignment="Center" RenderTransformOrigin="0.491,1.364" />
         </StatusBar>
+        <Button Content="_Mirror" Height="24" HorizontalAlignment="Right" Margin="0,93,10,0" x:Name="btn_Mirror" VerticalAlignment="Top" Width="124" Click="btn_Mirror_Click" />
+        <Button Content="St_retch" Height="24" HorizontalAlignment="Right" Margin="0,64,72,0" x:Name="btn_Stretch_x1" VerticalAlignment="Top" Width="62" Click="btn_Stretch_Click" />
     </Grid>
 </Window>

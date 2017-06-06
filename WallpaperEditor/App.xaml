@@ -1,9 +1,12 @@
-﻿<Application x:Class="WallpaperEditor.App"
+﻿<Application
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:WallpaperEditor"
+             xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="WallpaperEditor.App"
              Startup="Application_Startup">
     <Application.Resources>
-         
+
+        <System:Double x:Key="editAmountValue">0</System:Double>
+
     </Application.Resources>
 </Application>

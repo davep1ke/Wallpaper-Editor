@@ -29,8 +29,12 @@ namespace WallpaperEditor
     {
         double allowableDifference = .00001;
 
-        private WriteableBitmap imageBitmap = new WriteableBitmap(1,1,1,1,PixelFormats.Bgr101010, BitmapPalettes.BlackAndWhite);
-        
+        private WriteableBitmap imageBitmap = BitmapOperations.createDummyBitmap();
+
+        //hold this in case we want to send keypresses down. 
+        //private EditGrid editor = null;
+        private bool editorOpen = false;
+
         //various directories 
         public DirectoryInfo backupDirectory = null;
         public DirectoryInfo scanDirectory = null;
@@ -42,7 +46,6 @@ namespace WallpaperEditor
             
             InitializeComponent();
             syncLocalSettings();
-            grid_EditOpts.Visibility = Visibility.Hidden;
 
             //Loop through our desination dirs. 
 
@@ -84,6 +87,101 @@ namespace WallpaperEditor
                 pos++;
 
             }
+        }
+
+
+        public void process_stretch_split(EditGrid.selectedDirection selectedDir, int sourceAmount, int destAmount)
+        {
+            //work out how much we should stretch / take from each side
+            int newSourceAmount = sourceAmount / 2;
+            int newDestAmount = destAmount / 2;
+
+            //make sure if we are a pixel under, we go over instead. Can be cropped easily after? 
+            if (newSourceAmount *2 < sourceAmount) { newSourceAmount++; }
+            if (newDestAmount * 2 < destAmount) { newDestAmount++; }
+
+            var oppositeDir = selectedDir;
+            switch (selectedDir)
+            {
+                case EditGrid.selectedDirection.A: oppositeDir = EditGrid.selectedDirection.D; break;
+                case EditGrid.selectedDirection.D: oppositeDir = EditGrid.selectedDirection.A; break;
+                case EditGrid.selectedDirection.X: oppositeDir = EditGrid.selectedDirection.W; break;
+                case EditGrid.selectedDirection.W: oppositeDir = EditGrid.selectedDirection.X; break;
+
+            }
+
+
+            //split the source and dest amounts, call process_Stretch twice. 
+            process_Stretch(selectedDir, newSourceAmount, newDestAmount);
+            process_Stretch(oppositeDir, newSourceAmount, newDestAmount);
+            
+
+        }
+
+
+
+        public void process_Stretch(EditGrid.selectedDirection selectedDir, int sourceAmount, int destAmount)
+        {
+
+            //create a new writeable bitmap with the appropriate dims (i.e. orig + destamount)
+            int newY = imageBitmap.PixelHeight;
+            int newX = imageBitmap.PixelWidth;
+
+            
+            if (selectedDir == EditGrid.selectedDirection.W || selectedDir == EditGrid.selectedDirection.X) { newY += destAmount; }
+            else { newX += destAmount; }
+
+            WriteableBitmap newCanvas = BitmapOperations.createCanvas(newX, newY, imageBitmap);
+
+            //place this on our canvas based on the direction
+            Int32Rect sourceDestPositon = new Int32Rect(0, 0, imageBitmap.PixelWidth, imageBitmap.PixelHeight); //where are we placing our source image?
+            Int32Rect copySourceDims = new Int32Rect(0, 0, imageBitmap.PixelWidth, imageBitmap.PixelHeight); //where we are taking pixels from on our original image
+            Int32Rect copyDestDims = new Int32Rect(0, 0, newX, newY); //where we are stetch/placing the to
+
+            //set the various source and destination rects
+            switch (selectedDir)
+            {
+                case EditGrid.selectedDirection.A:
+                    sourceDestPositon.X = destAmount;
+                    copySourceDims.Width = sourceAmount;
+                    copyDestDims.Width = destAmount + sourceAmount;
+                break;
+                case EditGrid.selectedDirection.D:
+                    //sourceDestPositon.Width -= destAmount;
+                    copySourceDims.X = imageBitmap.PixelWidth - sourceAmount;
+                    copySourceDims.Width = sourceAmount;
+                    copyDestDims.X = imageBitmap.PixelWidth - sourceAmount;
+                    copyDestDims.Width = destAmount +sourceAmount;
+
+                    break;
+                case EditGrid.selectedDirection.W:
+                    sourceDestPositon.Y = destAmount;
+                    copySourceDims.Height = sourceAmount;
+                    copyDestDims.Height = destAmount + sourceAmount;
+                    break;
+                case EditGrid.selectedDirection.X:
+                    //sourceDestPositon.Height -= destAmount;
+                    copySourceDims.Y = imageBitmap.PixelHeight - sourceAmount;
+                    copySourceDims.Height = sourceAmount;
+                    copyDestDims.Y = imageBitmap.PixelHeight - sourceAmount;
+                    copyDestDims.Height = destAmount + sourceAmount;
+                    break;
+                    
+            }
+            
+            //copy the original, unaltered, to the right place in our target
+            newCanvas = BitmapOperations.copyArea(imageBitmap, newCanvas, null, sourceDestPositon);
+            //now copy/stretch the appropriate section from our source and paste over the top
+            newCanvas = BitmapOperations.copyArea(imageBitmap, newCanvas, copySourceDims, copyDestDims);
+
+            
+            refreshImage(newCanvas);
+
+        }
+
+        public void editorClosed()
+        {
+            editorOpen = false;
         }
 
         public void postSetup()
@@ -310,10 +408,18 @@ namespace WallpaperEditor
             bitmapImageSource.UriSource = uri;
             bitmapImageSource.CacheOption = BitmapCacheOption.OnLoad;
             bitmapImageSource.EndInit();
+            try
+            {
+                WriteableBitmap newImageBitmap = new WriteableBitmap(bitmapImageSource);
+                refreshImage(newImageBitmap);
+            }
+            catch
+            {
+                refreshImage(null);
+                setStatus("Error loading image " + uri.AbsolutePath);
+            }
 
-            imageBitmap = new WriteableBitmap(bitmapImageSource);
-
-            refreshImage();
+            
         }
 
 
@@ -321,11 +427,20 @@ namespace WallpaperEditor
         /// <summary>
         /// Refresh the image display, and update resolutions fields.
         /// </summary>
-        private void refreshImage()
+        private void refreshImage(WriteableBitmap newImage)
         {
+
             //TODO - display image. 
             if (imageBitmap != null)
             {
+                //try force it to Gfree up memory. This bit should do nothing.  
+                imageBitmap.Freeze();
+                imageBitmap = null;   
+            }
+            if (newImage != null)
+            { 
+                newImage.Freeze();
+                imageBitmap = newImage;
                 Image_Preview.Source = imageBitmap;
 
                 Tag_ImageDims.Text = imageBitmap.PixelWidth + "x" + imageBitmap.PixelHeight;
@@ -481,6 +596,22 @@ namespace WallpaperEditor
             }
         }
 
+        public int res_currentX
+        {
+            get
+            {
+                return imageBitmap.PixelWidth;
+            }
+        }
+
+        public int res_currentY
+        {
+            get
+            {
+                return imageBitmap.PixelHeight;
+            }
+        }
+
         //For cropping, swap around the master (as we want to crop against the shortest side). 
         public int res_targetXresolution_Crop
         {
@@ -500,6 +631,7 @@ namespace WallpaperEditor
                 }
             }
         }
+
 
         public int res_targetYresolution_Crop
         {
@@ -693,20 +825,84 @@ namespace WallpaperEditor
 
         private void btn_Crop_Click(object sender, RoutedEventArgs e)
         {
-            //show the help
-            setStatus("Crop using buttons");
-            grid_EditOpts.Visibility = Visibility.Visible;
+            if (editorOpen ==false)
+            {
+                //show the help
+                setStatus("Crop using dialog");
+                //InputBindingCollection defaultBindings = mainWindowGrid.InputBindings;
+                //mainWindowGrid.InputBindings.Clear();
+                EditGrid editor = new EditGrid(this, EditGrid.editMode.crop);
+                editor.Show();
+                editor.Focus();
+                editorOpen = true;
+            }
 
-            grid_EditOpts.Focus();
-            grid_EditOpts.Children[0].Focus();
+        }
 
+        private void btn_Stretch_Click(object sender, RoutedEventArgs e)
+        {
+            //was this x1 or x2
+            EditGrid.editMode stretchmode = EditGrid.editMode.none;
+            Button button = (Button)sender;
+            if (button == btn_Stretch_x1)
+            {
+                stretchmode = EditGrid.editMode.stretch;
+            }
+            else if (button == btn_Stretch_x2)
+            {
+                stretchmode = EditGrid.editMode.stretchSplit;
+            }
+            else
+            {
+                MessageBox.Show("Error!");
+            }
+
+            if (editorOpen == false)
+            {
+                //show the help
+                setStatus("Stretch using dialog");
+                EditGrid editor = new EditGrid(this, stretchmode);
+                editor.Show();
+                editor.Focus();
+                editorOpen = true;
+            }
+        }
+
+        private void btn_Mirror_Click(object sender, RoutedEventArgs e)
+        {
+            if (editorOpen == false)
+            {
+                //show the help
+                setStatus("Mirror using dialog");
+                EditGrid editor = new EditGrid(this, EditGrid.editMode.mirror);
+                editor.Show();
+                editor.Focus();
+                editorOpen = true;
+
+            }
+        }
+        private void btn_External_Edit(object sender, RoutedEventArgs e)
+        {
+            //write file to temp
+            saveImage();
+
+            //open editor
+            ProcessStartInfo StartInfo = new ProcessStartInfo(Properties.Settings.Default.externalEditor);
+            StartInfo.Arguments = Properties.Settings.Default.testImageLocation;
+            Process myProcess = new Process();
+            myProcess.StartInfo = StartInfo;
+            myProcess.Start();
+            myProcess.WaitForExit();
+
+
+            //reload from temp
+            LoadImage(new Uri(Properties.Settings.Default.testImageLocation));
 
 
         }
 
-       
 
-        private int res_stride
+        /*private int res_stride
         {
             get
             {
@@ -720,29 +916,11 @@ namespace WallpaperEditor
             {
                 return (res_targetXresolution_Crop * (imageBitmap.Format.BitsPerPixel + 7) )/ 8;
             }
-        }
+        }*/
 
 
 
-        private void btn_External_Edit(object sender, RoutedEventArgs e)
-        {
-            //write file to temp
-            saveImage();
 
-            //open editor
-            ProcessStartInfo StartInfo = new ProcessStartInfo(Properties.Settings.Default.externalEditor);
-            StartInfo.Arguments = Properties.Settings.Default.testImageLocation;
-            Process myProcess = new Process();
-            myProcess.StartInfo =StartInfo;
-            myProcess.Start();
-            myProcess.WaitForExit();
-
-
-            //reload from temp
-            LoadImage(new Uri(Properties.Settings.Default.testImageLocation));
-
-
-        }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -757,22 +935,21 @@ namespace WallpaperEditor
 
         #endregion
 
-        private void btn_Edit_Click(object sender, RoutedEventArgs e)
+        public void process_Crop(String buttonName)
         {
-            //Work out starting and finishing V pos
-            Button button = (Button)sender;
             
+
             int pos_T = 0;
             //int pos_B = imageBitmap.PixelHeight;
             int difY = imageBitmap.PixelHeight - res_targetYresolution_Crop;
 
             //top aligned
-            if (button.Name == "edit_Q" || button.Name == "edit_W" || button.Name == "edit_E")
+            if (buttonName == "edit_Q" || buttonName == "edit_W" || buttonName == "edit_E")
             {
                 //pos_B = res_targetYresolution_Crop;
             }
             //middle aligned
-            else if (button.Name == "edit_A" || button.Name == "edit_S" || button.Name == "edit_D")
+            else if (buttonName == "edit_A" || buttonName == "edit_S" || buttonName == "edit_D")
             {
 
                 int difPerSide = difY / 2;
@@ -789,12 +966,12 @@ namespace WallpaperEditor
             int difX = imageBitmap.PixelWidth - res_targetXresolution_Crop;
 
             //left aligned
-            if (button.Name == "edit_Q" || button.Name == "edit_A" || button.Name == "edit_Z")
+            if (buttonName == "edit_Q" || buttonName == "edit_A" || buttonName == "edit_Z")
             {
 //pos_R = res_targetXresolution_Crop;
             }
             //middle aligned
-            else if (button.Name == "edit_W" || button.Name == "edit_S" || button.Name == "edit_X")
+            else if (buttonName == "edit_W" || buttonName == "edit_S" || buttonName == "edit_X")
             {
 
                 int difPerSide = difX / 2;
@@ -833,12 +1010,10 @@ namespace WallpaperEditor
             //            target.WritePixels(            new Int32Rect(pos_L, pos_T, pos_R, pos_B),              getBitmapArray(), res_stride, 0);
 
     */
-            imageBitmap = target;
-
-            refreshImage();
-
-            grid_EditOpts.Visibility = Visibility.Hidden;
-            setStatus("");
+           
+            refreshImage(target);
+            
+            setStatus("Applied crop operation");         
 
         }
 
@@ -862,6 +1037,7 @@ namespace WallpaperEditor
             //Refresh cached filelist. Keep current posn.
             populateFileList(true);
         }
-       
+
+
     }
 }
