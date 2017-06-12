@@ -822,11 +822,19 @@ namespace WallpaperEditor
             string fullpath = selectedFolder.FullName + "\\" + FileList.SelectedItem.ToString();
 
             //save the new image
-            saveImage(di.FullName + @"\" + FileList.SelectedItem.ToString());
+            try
+            {
+                saveImage(di.FullName + @"\" + FileList.SelectedItem.ToString());
 
-            //move the original into the backup folder.
-            FileInfo fi = new FileInfo(fullpath);
-            fi.MoveTo(Properties.Settings.Default.backupDirectoryPath + @"\" + fi.Name);
+                //move the original into the backup folder.
+                FileInfo fi = new FileInfo(fullpath);
+                fi.MoveTo(Properties.Settings.Default.backupDirectoryPath + @"\" + fi.Name);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to save/move file to backup location " + fullpath + " - " + ex.StackTrace + " - " + ex.ToString() );
+            }
+
 
             //Refresh cached filelist. Keep current posn.
             populateFileList(true);
