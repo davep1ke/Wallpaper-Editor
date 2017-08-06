@@ -118,8 +118,7 @@ namespace WallpaperEditor
 
         }
 
-
-
+        
         public void process_Stretch(EditGrid.selectedDirection selectedDir, int sourceAmount, int destAmount)
         {
 
@@ -172,12 +171,76 @@ namespace WallpaperEditor
             //copy the original, unaltered, to the right place in our target
             newCanvas = BitmapOperations.copyArea(imageBitmap, newCanvas, null, sourceDestPositon);
             //now copy/stretch the appropriate section from our source and paste over the top
-            newCanvas = BitmapOperations.copyArea(imageBitmap, newCanvas, copySourceDims, copyDestDims);
+            newCanvas = BitmapOperations.copyArea(imageBitmap, newCanvas, copySourceDims, copyDestDims, false);
 
             
             refreshImage(newCanvas);
 
         }
+
+        public void process_Mirror(EditGrid.selectedDirection selectedDir, int sourceAmount, int destAmount)
+        {
+
+            //create a new writeable bitmap with the appropriate dims (i.e. orig + destamount)
+            int newY = imageBitmap.PixelHeight;
+            int newX = imageBitmap.PixelWidth;
+
+            bool mirrorX = false;
+            bool mirrorY = false;
+
+            if (selectedDir == EditGrid.selectedDirection.W || selectedDir == EditGrid.selectedDirection.X) { newY += destAmount; }
+            else { newX += destAmount; }
+
+            WriteableBitmap newCanvas = BitmapOperations.createCanvas(newX, newY, imageBitmap);
+
+            //place this on our canvas based on the direction
+            Int32Rect sourceDestPositon = new Int32Rect(0, 0, imageBitmap.PixelWidth, imageBitmap.PixelHeight); //where are we placing our source image?
+            Int32Rect copySourceDims = new Int32Rect(0, 0, imageBitmap.PixelWidth, imageBitmap.PixelHeight); //where we are taking pixels from on our original image
+            Int32Rect copyDestDims = new Int32Rect(0, 0, newX, newY); //where we are stetch/placing the to
+
+            //set the various source and destination rects
+            switch (selectedDir)
+            {
+                case EditGrid.selectedDirection.A:
+                    mirrorX = true;
+                    sourceDestPositon.X = destAmount;
+                    copySourceDims.Width = sourceAmount;
+                    copyDestDims.Width = destAmount;
+                    break;
+                case EditGrid.selectedDirection.D:
+                    mirrorX = true;
+                    copySourceDims.X = imageBitmap.PixelWidth - sourceAmount;
+                    copySourceDims.Width = sourceAmount;
+                    copyDestDims.X = imageBitmap.PixelWidth;
+                    copyDestDims.Width = destAmount;
+
+                    break;
+                case EditGrid.selectedDirection.W:
+                    mirrorY = true;
+                    sourceDestPositon.Y = destAmount;
+                    copySourceDims.Height = sourceAmount;
+                    copyDestDims.Height = destAmount;
+                    break;
+                case EditGrid.selectedDirection.X:
+                    mirrorY = true;
+                    copySourceDims.Y = imageBitmap.PixelHeight - sourceAmount;
+                    copySourceDims.Height = sourceAmount;
+                    copyDestDims.Y = imageBitmap.PixelHeight;
+                    copyDestDims.Height = destAmount;
+                    break;
+
+            }
+
+            //copy the original, unaltered, to the right place in our target
+            newCanvas = BitmapOperations.copyArea(imageBitmap, newCanvas, null, sourceDestPositon);
+            //now copy/stretch the appropriate section from our source and paste over the top
+            newCanvas = BitmapOperations.copyArea(imageBitmap, newCanvas, copySourceDims, copyDestDims, mirrorX, mirrorY);
+
+
+            refreshImage(newCanvas);
+
+        }
+
 
         public void editorClosed()
         {
