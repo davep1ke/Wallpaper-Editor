@@ -14,7 +14,7 @@ namespace WallpaperEditor
     public partial class App : Application
     {
 
-        enum nextArg { blank, scan_folder, backup_folder, destination_folder };
+        enum nextArg { blank, scan_folder, backup_folder, destination_folder, background };
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -28,6 +28,7 @@ namespace WallpaperEditor
                 //remove any "'s 
                 String thisStr = next.Replace("\"", "");
 
+                //modes
                 if (arg == nextArg.blank && thisStr == nextArg.backup_folder.ToString())
                 {
                     arg = nextArg.backup_folder;
@@ -41,6 +42,12 @@ namespace WallpaperEditor
                     arg = nextArg.scan_folder;
                 }
 
+                //direct
+                else if (arg == nextArg.blank && thisStr == nextArg.background.ToString())
+                {
+                    wnd.runInBackground = true;
+                }
+
                 //Other, unexpected arg
                 else if (arg == nextArg.blank)
                 {
@@ -48,7 +55,7 @@ namespace WallpaperEditor
                     cancel = true;
 
                 }
-                //individal modes
+                //mode values
                 else if (arg == nextArg.backup_folder)
                 {
                     wnd.backupDirectory = new System.IO.DirectoryInfo(thisStr);
@@ -64,6 +71,7 @@ namespace WallpaperEditor
                     wnd.scanDirectory = new System.IO.DirectoryInfo(thisStr);
                     arg = nextArg.blank;
                 }
+
 
             }
             if (cancel)

@@ -34,6 +34,7 @@ namespace WallpaperEditor
         //hold this in case we want to send keypresses down. 
         //private EditGrid editor = null;
         private bool editorOpen = false;
+        public bool runInBackground = false;
 
         //various directories 
         public DirectoryInfo backupDirectory = null;
@@ -257,15 +258,36 @@ namespace WallpaperEditor
                 expandFolder(scanDirectory, true);
             }
 
-            /*if (backupDirectory != null)
+            if (runInBackground)
             {
-                txtBackupFolder.Text = backupDirectory.FullName;
+                backgroundScan();
             }
-            */
-            this.Show();
+            else
+            {
+                this.Show();
+            }
 
 
         }
+
+
+        /// <summary>
+        /// Scan for files first, only show window if found
+        /// </summary>
+        public void backgroundScan()
+        {
+            if (FileList.Items.Count > 0)
+            {
+                this.Show();
+            }
+            //no files, close
+            else
+            {
+                this.Close();
+            }
+        }
+
+
 
         #region FolderBrowser
 
