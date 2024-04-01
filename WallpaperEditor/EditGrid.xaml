@@ -1,0 +1,72 @@
+﻿<Window x:Class="WallpaperEditor.EditGrid"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WallpaperEditor"
+        mc:Ignorable="d"
+        Title="EditGrid" Height="308.409" Width="130.39" Background="#FF7065D8" ResizeMode="NoResize" ScrollViewer.VerticalScrollBarVisibility="Disabled" ShowInTaskbar="False" ShowActivated="False" WindowStyle="None" Activated="Window_Activated" Closing="Window_Closing">
+    <Grid>
+        <Grid.InputBindings >
+            <KeyBinding Key="Q" Command="{Binding btn_Edit_Click}"></KeyBinding>
+            <KeyBinding Key="W" Command="{Binding btn_Edit_Click}"></KeyBinding>
+            <KeyBinding Key="E" Command="{Binding btn_Edit_Click}"></KeyBinding>
+            <KeyBinding Key="A" Command="{Binding btn_Edit_Click}"></KeyBinding>
+            <KeyBinding Key="S" Command="{Binding btn_Edit_Click}"></KeyBinding>
+            <KeyBinding Key="D" Command="{Binding btn_Edit_Click}"></KeyBinding>
+            <KeyBinding Key="Z" Command="{Binding btn_Edit_Click}"></KeyBinding>
+            <KeyBinding Key="X" Command="{Binding btn_Edit_Click}"></KeyBinding>
+            <KeyBinding Key="C" Command="{Binding btn_Edit_Click}"></KeyBinding>
+            <KeyBinding Key="Esc" Command="{Binding btn_Cancel_Click}"></KeyBinding>
+        </Grid.InputBindings>
+        <Grid x:Name="grid_EditOpts" Margin="7,7,0,0" RenderTransformOrigin="-0.685,-0.55" Height="116" VerticalAlignment="Top" HorizontalAlignment="Left" Width="116">
+
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF85D67D"/>
+                    <GradientStop Color="#FFF53D3D" Offset="1"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="17" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="17" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+
+            </Grid.RowDefinitions>
+            <Label x:Name="Xlabel" Content="X" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Margin="0,3,0,0" Padding="0,0,0,0"/>
+            <Label x:Name="Ylabel" Content="Y" Grid.Column="0" Grid.Row="1" Grid.RowSpan="3" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0"/>
+            <Button Grid.Column="1" Grid.Row="1" x:Name="edit_Q" Click="btn_Edit_Click" Content="_Q"/>
+            <Button Grid.Column="2" Grid.Row="1" x:Name="edit_W" Click="btn_Edit_Click" Content="_W"/>
+            <Button Grid.Column="3" Grid.Row="1" x:Name="edit_E" Click="btn_Edit_Click" Content="_E"/>
+            <Button Grid.Column="1" Grid.Row="2" x:Name="edit_A" Click="btn_Edit_Click" Content="_A"/>
+            <Button Grid.Column="2" Grid.Row="2" x:Name="edit_S" Click="btn_Edit_Click" Content="_S"/>
+            <Button Grid.Column="3" Grid.Row="2" x:Name="edit_D" Click="btn_Edit_Click" Content="_D"/>
+            <Button Grid.Column="1" Grid.Row="3" x:Name="edit_Z" Click="btn_Edit_Click" Content="_Z"/>
+            <Button Grid.Column="2" Grid.Row="3" x:Name="edit_X" Click="btn_Edit_Click" Content="_X"/>
+            <Button Grid.Column="3" Grid.Row="3" x:Name="edit_C" Click="btn_Edit_Click" Content="_C"/>
+        </Grid>
+
+        <Button x:Name="btn_cancel" Content="Cancel" HorizontalAlignment="Left" Height="21" Margin="71,279,0,0" VerticalAlignment="Top" Width="52" Click="btn_cancel_Click" IsCancel="True"/>
+        <Grid x:Name="grid_stretch_mirror" HorizontalAlignment="Left" Height="146" Margin="7,128,0,0" VerticalAlignment="Top" Width="116">
+
+
+            <Button x:Name="btn_OK" Content="_OK" HorizontalAlignment="Left" Height="22" Margin="90,124,0,0" VerticalAlignment="Top" Width="26" Click="btn_OK_Click" IsDefault="True"/>
+            <Label x:Name="lbl_source_px" Content="px" HorizontalAlignment="Center" Height="17" Margin="56,41,35,0" VerticalAlignment="Top" Width="22" HorizontalContentAlignment="Center" Padding="0"/>
+            <Slider x:Name="slider_source_px" HorizontalAlignment="Left" Height="18" Margin="1,18,-4,0" VerticalAlignment="Top" Width="116" Maximum="102"   />
+            <TextBox x:Name="txt_Source_val" HorizontalAlignment="Left" Height="18" Margin="0,40,0,0" TextWrapping="Wrap" Text="{Binding Value, ElementName=slider_source_px, Mode=TwoWay}" VerticalAlignment="Top" Width="56"/>
+            <Label x:Name="label_source_header" Content="Source:" HorizontalAlignment="Center" Height="17" Margin="1,0,47,0" VerticalAlignment="Top" Width="65" Padding="0"/>
+            <Label x:Name="lbl_dest_px" Content="px" HorizontalAlignment="Center" Height="17" Margin="56,103,35,0" VerticalAlignment="Top" Width="22" HorizontalContentAlignment="Center" Padding="0"/>
+            <Slider x:Name="slider_dest_px" HorizontalAlignment="Left" Height="18" Margin="1,80,-4,0" VerticalAlignment="Top" Width="116" Maximum="102"   />
+            <TextBox x:Name="txt_dest_px" HorizontalAlignment="Left" Height="18" Margin="0,102,0,0" TextWrapping="Wrap" Text="{Binding Value, ElementName=slider_dest_px, Mode=TwoWay}" VerticalAlignment="Top" Width="56"/>
+            <Label x:Name="label_dest_header" Content="Dest:" HorizontalAlignment="Center" Height="17" Margin="1,62,47,0" VerticalAlignment="Top" Width="65" Padding="0"/>
+        </Grid>
+
+    </Grid>
+</Window>

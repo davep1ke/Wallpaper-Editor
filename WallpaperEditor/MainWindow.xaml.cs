@@ -434,8 +434,11 @@ namespace WallpaperEditor
             if (selectedItem != null && selectedItem.Tag is DirectoryInfo)
             {
                 DirectoryInfo di = selectedItem.Tag as DirectoryInfo;
-                FileList.ItemsSource = di.EnumerateFiles("*");
+                
+                var files = di.EnumerateFiles("*.*").Where(s => s.Extension != ".db" && s.Extension != ".nfo");
 
+
+                FileList.ItemsSource = files;
             }
 
             if (keepPos && currentPos > 0 && currentPos < FileList.Items.Count)
